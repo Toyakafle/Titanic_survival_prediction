@@ -6,7 +6,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
-import pickle
+import joblib  # Use joblib instead of pickle
 import os
 
 # Load data
@@ -17,8 +17,8 @@ X = df.drop(["PassengerId", "Name", "Ticket", "Cabin", "Survived"], axis=1)
 y = df["Survived"]
 
 # Separate numeric and categorical columns
-num_cols = X.select_dtypes(include=["int64", "float64"]).columns
-cat_cols = X.select_dtypes(include=["object"]).columns
+num_cols = X.select_dtypes(include=["int64", "float64"]).columns.tolist()
+cat_cols = X.select_dtypes(include=["object"]).columns.tolist()
 
 # Pipelines
 num_pipeline = Pipeline([
@@ -42,7 +42,9 @@ clf = Pipeline([
 ])
 
 # Train-test split
-X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_valid, y_train, y_valid = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
 # Train
 clf.fit(X_train, y_train)
@@ -53,8 +55,10 @@ acc = accuracy_score(y_valid, preds)
 print(f"Validation Accuracy: {acc:.4f}")
 
 # Create directory if it doesn't exist
-os.makedirs('models', exist_ok=True)
+model_dir = "models"
+os.makedirs(model_dir, exist_ok=True)
 
-# Save model
-with open("models/model.pkl", "wb") as f:
-    pickle.dump(clf, f)
+# Save model using joblib
+model_path = os.path.join(model_dir, "model.pkl")
+joblib.dump(clf, model_path)
+print(f"Model saved to: {model_path}")
