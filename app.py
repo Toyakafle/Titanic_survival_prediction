@@ -3,7 +3,7 @@ import pickle
 import pandas as pd
 
 # Load model
-with open("models/model.pkl", "rb") as f:
+with open("model.pkl", "rb") as f:
     model = pickle.load(f)
 
 st.title("Titanic Survival Prediction")
