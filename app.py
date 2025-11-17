@@ -1,27 +1,30 @@
 import streamlit as st
 import pandas as pd
 import streamlit as st
-import pickle  
+import joblib
 
-# Load your model
-with open("model.pkl", "rb") as f:
-    model = pickle.load(f)
+import os
+
+MODEL_PATH = "model.pkl"
+
+if os.path.exists(MODEL_PATH):
+    try:
+        model = joblib.load(MODEL_PATH)
+        st.success("Model loaded successfully!")
+    except Exception as e:
+        st.error(f"Error loading the model: {e}")
+        model = None
+else:
+    st.error(f"Model file not found at {MODEL_PATH}")
+    model = None
+
+
 
 
 
 st.title("Titanic Survival Prediction")
 
-# ✅ Make sure path is correct
-MODEL_PATH = os.path.join("models", "model.pkl")
 
-# Load model
-@st.cache_resource
-def load_model(path):
-    with open(path, "rb") as f:
-        model = pickle.load(f)
-    return model
-
-model = load_model(MODEL_PATH)
 
 
 # User input
