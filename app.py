@@ -1,13 +1,24 @@
 import streamlit as st
-import pickle
 import pandas as pd
-
-# Load model
-with open("models/model.pkl", "rb") as f:
-    model = pickle.load(f)
+import pickle
+import os
 
 st.title("Titanic Survival Prediction")
 
+# ✅ Make sure path is correct
+MODEL_PATH = os.path.join("models", "model.pkl")
+
+# Load model
+@st.cache_resource
+def load_model(path):
+    with open(path, "rb") as f:
+        model = pickle.load(f)
+    return model
+
+model = load_model(MODEL_PATH)
+
+
+# User input
 st.write("Enter passenger details:")
 
 pclass = st.selectbox("Passenger Class", [1, 2, 3])
@@ -28,7 +39,10 @@ if st.button("Predict Survival"):
         "Fare": [fare],
         "Embarked": [embarked]
     })
-    pred = model.predict(df_input)[0]
+
+    # Make prediction
+    prediction = model.predict(df_input)[0]
     proba = model.predict_proba(df_input)[0, 1]
-    result = "Survived" if pred == 1 else "Did Not Survive"
+
+    result = "Survived" if prediction == 1 else "Did Not Survive"
     st.success(f"Prediction: **{result}** (Probability of survival: {proba:.2f})")
