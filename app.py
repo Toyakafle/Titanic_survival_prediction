@@ -1,9 +1,13 @@
 import streamlit as st
 import pandas as pd
+import streamlit as st
+import pickle  
 
-# Load model
-with open("models/model.pkl", "rb") as f:
+# Load your model
+with open("model.pkl", "rb") as f:
     model = pickle.load(f)
+
+
 
 st.title("Titanic Survival Prediction")
 
